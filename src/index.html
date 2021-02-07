@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="css/style.css"/>
+    <title>E-Shop'as</title>
+  </head>
+  <body>
+    <div class="row header">
+      <a class="waves-effect waves-light btn left menu sidenav-trigger" href="#" data-target="menu" ><i class="material-icons">menu</i></a>
+      <div class="col s4 offset-s5" id="title">Igno shopas</div>
+    </div>
+    <div class="container">
+      <ul id="menu" class="sidenav">
+        <li><a class="waves-effect waves-light modal-trigger" href="#productsPage" ><i class="material-icons left">store</i>Products</a></li>
+        <li><a class="waves-effect waves-light modal-trigger" href="" ><i class="material-icons left">shopping_cart</i>Orders</a></li>
+      </ul>
+
+      <div class="" id="currentOrders">
+		
+      </div>
+	  
+    </div>
+
+
+    <div id="productsPage" class="modal ">
+      <div class="row">
+        <div class="col s6">
+          <a class="waves-effect waves-light btn back"><i class="material-icons left">keyboard_backspace</i> Back</a>
+        </div>
+      </div>
+
+      <div class="row" id="availableProducts">
+        <div class="col s2 product">
+          <div class="card small"></div>
+        </div>
+        <div class="col s2 product">
+          <div class="card small"></div>
+        </div>
+        <div class="col s2 product">
+          <div class="card small"></div>
+        </div>
+        <div class="col s2 product">
+          <div class="card small"></div>
+        </div>
+      </div>
+      <div class="productDetails row">
+        <div class="row">
+          <div class="col s2" id="productName">Televizorius</div>
+          <div class="col s1" id="productPrice">300</div>
+        </div>
+        <div class="row">
+          <div class="col s1">Available: </div>
+          <div class="col s1">3</div>
+        </div>
+        
+      </div>
+
+    </div>
+
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.20/lodash.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
