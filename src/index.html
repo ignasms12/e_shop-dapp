@@ -21,45 +21,124 @@
         <li><a class="waves-effect waves-light modal-trigger" href="" ><i class="material-icons left">shopping_cart</i>Orders</a></li>
       </ul>
 
+	  <a class="btn-floating btn-large waves-effect waves-light right" id="newOrder"><i class="material-icons">add</i></a>
+
       <div class="" id="currentOrders">
-		
+		  <div class="sectionName center"> My current orders</div>
+		<table class="currentOrders">
+			<thead>
+				<th>
+					Order ID
+				</th>
+				<th>
+					No. of products
+				</th>
+				<th>
+					Total Sum
+				</th>
+				<th>
+					Creation Date
+				</th>
+				<th>
+					Status
+				</th>
+			</thead>
+			<tbody id="orders">
+			</tbody>
+		</table>
       </div>
-	  
+	  <div class="center">
+		<div class="preloader-wrapper big active">
+			<div class="spinner-layer spinner-blue">
+			<div class="circle-clipper left">
+				<div class="circle"></div>
+			</div><div class="gap-patch">
+				<div class="circle"></div>
+			</div><div class="circle-clipper right">
+				<div class="circle"></div>
+			</div>
+			</div>
+		</div>
+	</div>
+
     </div>
+
+	<div class="modal" id="orderInfo">
+		<table >
+			<thead>
+				<th>
+					Order ID
+				</th>
+				<th>
+					No. of products
+				</th>
+				<th>
+					Total Sum
+				</th>
+				<th>
+					Creation Date
+				</th>
+				<th>
+					Status
+				</th>
+			</thead>
+			<tbody id="orderStuff"></tbody>
+		</table>
+		<table >
+			<thead>
+				<th>
+					Product
+				</th>
+				<th>
+					Price per unit
+				</th>
+				<th>
+					Quantity
+				</th>
+				<th>
+					Total price
+				</th>
+			</thead>
+			<tbody id="productInfo">
+			</tbody>
+		</table>
+
+		<a class="waves-effect waves-light btn" id="submitOrder">Submit order</a>
+
+	</div>
+
+
+
 
 
     <div id="productsPage" class="modal ">
-      <div class="row">
-        <div class="col s6">
-          <a class="waves-effect waves-light btn back"><i class="material-icons left">keyboard_backspace</i> Back</a>
-        </div>
-      </div>
 
-      <div class="row" id="availableProducts">
-        <div class="col s2 product">
-          <div class="card small"></div>
-        </div>
-        <div class="col s2 product">
-          <div class="card small"></div>
-        </div>
-        <div class="col s2 product">
-          <div class="card small"></div>
-        </div>
-        <div class="col s2 product">
-          <div class="card small"></div>
-        </div>
-      </div>
-      <div class="productDetails row">
-        <div class="row">
-          <div class="col s2" id="productName">Televizorius</div>
-          <div class="col s1" id="productPrice">300</div>
-        </div>
-        <div class="row">
-          <div class="col s1">Available: </div>
-          <div class="col s1">3</div>
-        </div>
-        
-      </div>
+		<div class="row" id="availableProducts">
+		</div>
+		<div class="productDetails row">
+			<div class="row">
+				<div class="col s2" id="productName">Televizorius</div>
+				<div class="col s3" id="productPrice">300</div>
+			</div>
+			<div class="row">
+				<div class="col s1" id="availability">Available: </div>
+				<div class="col s1" id="availableQuantity">3</div>
+			</div>
+			<a class="btn-floating btn-large waves-effect waves-light right" id="addToOrder"><i class="material-icons">add</i></a>
+
+			<div class="input-field col s12 hidden" id="chosenOrderId">
+				<select>
+					<option value="" disabled selected></option>
+					<option value="1">Option 1</option>
+				</select>
+				<label>Choose the Order ID</label>
+			</div>
+			<p class="range-field hidden">
+				<label>Available quantity</label>
+				<input type="range" id="chosenQuantity" min="0" max="3" />
+			</p>
+			<a class="waves-effect waves-light btn hidden" id="addProduct">Add product</a>
+		</div>
 
     </div>
 

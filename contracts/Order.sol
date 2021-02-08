@@ -62,8 +62,8 @@ contract Order{
     );
 
     constructor () public {
-        addProduct("televizorius", 200, 3);
-        addProduct("kompiuteris", 300, 2);
+        addProduct("televizorius", 20, 3);
+        addProduct("kompiuteris", 30, 2);
     }
 
     function createUser(
@@ -133,6 +133,26 @@ contract Order{
 
     function submitOrder(uint orderId) public {
         orders[orderId].orderState = State.Submitted;
+        uint prodCount = orders[orderId].productCount;
+        uint totalSum = orders[orderId].totalSum;
+        address payable[] memory receivers;
+        uint receiverCount = 0;
+        uint[] memory sums;
+        for(uint i = 0; i < prodCount; i++){
+            if(receivers[i-1] != products[orders[orderId].addedProducts[i].productId].merchant){
+                receivers[i] = products[orders[orderId].addedProducts[i].productId].merchant;
+                sums[i] = products[orders[orderId].addedProducts[i].productId].price * orders[orderId].addedProducts[i].quantity;
+                receiverCount++;
+            }
+        }
+        if(receiverCount == 1){
+            receivers[0].transfer(totalSum);
+        }
+        else{
+            for(uint i = 0; i < receiverCount; i++){
+                receivers[i].transfer(sums[i]);
+            }
+        }
     }
     
     function userReturn(string memory username) public view returns(address){

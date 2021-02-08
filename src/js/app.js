@@ -5,12 +5,85 @@ App = {
 	availableProducts: [],
 	orders: [],
 	states: ['New', 'InProcess', 'Submitted','Cancelled'],
+	selectedProductId: -1,
 	
 
 	init: async () => {
 		return App.initWeb3();
 	},
 
+	bindProductToCard: () =>{
+		for(let i = 0; i < App.availableProducts.length; i++){
+			let prod = App.availableProducts[i];
+			var product = $("<div></div>").addClass('col s2 product').attr('id', `${prod.prodId}_parent`);
+			var productCard = $("<div></div>").addClass('card small').attr('id', `${prod.prodId}_card`);
+			if(i == 0){
+				productCard.addClass('selected-card');
+			}
+			
+			$('#availableProducts').append(product);
+			$(`#${prod.prodId}_parent`).append(productCard);
+			$(`#productName`).text(App.availableProducts[0].prodName);
+			$(`#productPrice`).text(`${App.availableProducts[0].price} ETH`);
+			$(`#availableQuantity`).text(App.availableProducts[0].quantity);
+		}
+		console.log('function succeded');
+		$('.card').click((tar)=>{
+			$('.selected-card').removeClass('selected-card');
+			$(tar.target).addClass('selected-card');
+			console.log(tar.target.id);
+			var id = tar.target.id.split('_')[0];
+			var product = App.availableProducts[id];
+			$(`#productName`).text(product.prodName);
+			$(`#productPrice`).text(`${product.price} ETH`);
+			$(`#availableQuantity`).text(product.quantity);
+		})
+	
+	},
+
+	bindOrderToRow: () =>{
+		for(let i = 0; i < App.orders.length; i++){
+			if(App.orders[i].state != 'Submitted' || App.orders[i].state != 'Cancelled'){
+				let order = App.orders[i];
+
+				var or = $("<tr></tr>").attr('id', `${order.orderId}-order`).addClass('order').attr('href','#orderInfo');
+				var a = new Date(order.creationDate * 1000);
+				var date = a.getDate();
+				if($(`#${order.orderId}-order`).length){
+					document.querySelector(`#\\3${order.orderId}-order > td:nth-child(1)`).innerHTML = order.orderId;
+					document.querySelector(`#\\3${order.orderId}-order > td:nth-child(2)`).innerHTML = order.productCount;
+					document.querySelector(`#\\3${order.orderId}-order > td:nth-child(3)`).innerHTML = `${order.totalSum} ETH`;
+					document.querySelector(`#\\3${order.orderId}-order > td:nth-child(4)`).innerHTML = date;
+					document.querySelector(`#\\3${order.orderId}-order > td:nth-child(5)`).innerHTML = order.state;
+				}
+				else{
+					$('#orders').append(or);
+	
+					$(`#${order.orderId}-order`).append($("<td></td>").text(order.orderId));
+					$(`#${order.orderId}-order`).append($("<td></td>").text(order.productCount));
+					$(`#${order.orderId}-order`).append($("<td></td>").text(`${order.totalSum} ETH`));
+					$(`#${order.orderId}-order`).append($("<td></td>").text(date));
+					$(`#${order.orderId}-order`).append($("<td></td>").text(order.state));
+				}
+			}
+			if(i == App.orders.length -1){
+				$('.preloader-wrapper').css('visibility','hidden');
+			}
+			
+			
+		}
+		// $('.card').click((tar)=>{
+		// 	$('.selected-card').removeClass('selected-card');
+		// 	$(tar.target).addClass('selected-card');
+		// 	console.log(tar.target.id);
+		// 	var id = tar.target.id.split('_')[0];
+		// 	var product = App.availableProducts[id];
+		// 	$(`#productName`).text(product.prodName);
+		// 	$(`#productPrice`).text(`${product.price} ETH`);
+		// 	$(`#availableQuantity`).text(product.quantity);
+		// })
+	
+	},
 
 
 
@@ -122,16 +195,20 @@ App = {
 
 	},
 
-	getProducts: async(orderInstance, productCount)=>{
-		for(let i = 0; i < productCount; i++){
-			orderInstance.products(i).then((pr)=>{
-				var newProduct = App.fixUp('product',pr);
-				console.log(newProduct);
-				if(!App.availableProducts.includes(newProduct)){
-					App.availableProducts.push(newProduct);
-				}
-			})
-		}
+	getProducts: (orderInstance, productCount)=>{
+			for(let i = 0; i < productCount; i++){
+				orderInstance.products(i).then((pr)=>{
+					var newProduct = App.fixUp('product',pr);
+					console.log(newProduct);
+					if(!App.availableProducts.includes(newProduct)){
+						App.availableProducts.push(newProduct);
+					}
+					if(i == productCount-1){
+						App.bindProductToCard();
+					}
+				})
+			}
+		
 	},
 
 	getOrders: async (orderInstance, orderCount) =>{
@@ -158,6 +235,7 @@ App = {
 					else{
 						App.orders[identifier] = ord;
 					}
+					
 				}
 
 
@@ -178,9 +256,11 @@ App = {
 					if(counter == App.orders.length){
 						push(flag, identifier);
 					}
+					
 				}
-				
-				
+				if(App.orders.length == orderCount){
+					App.bindOrderToRow();
+				}
 			})
 		}
 		console.log(App.orders);
@@ -214,13 +294,25 @@ App = {
 			return inst.addProductToOrder(productId, quantity, orderId, {
 				from: App.account
 			});
-		}).then((result)=>{
-			console.log('Then callas');
-			console.log(result);
+		}).then(async (result)=>{
 			App.getOrders();
+			await location.reload();
+			return result;
 		}).catch((err)=>{
 			console.error(err);
 		});
+	},
+
+	submitOrder: async (orderId)=>{
+		App.contracts.order.deployed().then((inst)=>{
+			return inst.submitOrder(orderId,{from: App.accpimt});
+		}).then(async (result)=>{
+			App.getOrders();
+			await location.reload();
+			return result;
+		}).catch((err)=>{
+			console.error(err);
+		})
 	},
 
 	fixUp: (objectType, obj)=>{
@@ -341,15 +433,7 @@ $(function () {
 	});
 });
 
-const bindProductToCard = () =>{
 
-	var product = $("<div></div>").class('col s2 product').attr('id', `${item}_parent`);
-	var productCard = $("<div></div>").class('card small').attr('id', `${item}_card`);
-	
-	$('#availableProducts').append(product);
-	$(`${item}_parent`).append(productCard);
-
-}
 
 $(document).ready(function(){
     $('.sidenav').sidenav();
@@ -360,8 +444,84 @@ $(document).ready(function(){
 			instance.close();
 		}
 	});
-	$('.card').click((tar)=>{
-		$('.selected-card').removeClass('selected-card');
-		$(tar.target).addClass('selected-card');
+	$('#addToOrder').click((tar)=>{
+		var selectNum = 2;
+		for(let i = 0; i < App.orders.length; i++){
+			if(App.orders[i].state != 'Cancelled' || App.orders[i].state != 'Submitted'){
+				if($(`#chosenOrderId > select > option:nth-child(${selectNum})`).length){
+					$(`#chosenOrderId > select > option:nth-child(${selectNum})`).attr('value', App.orders[i].orderId).text(`Order: ${App.orders[i].orderId}`);
+				}
+				else{
+					var opt = $('<option></option>').attr('value', App.orders[i].orderId).text(`Order: ${App.orders[i].orderId}`);
+					$('#chosenOrderId > select').append(opt);
+				}
+				selectNum++;
+			}
+			if(i == App.orders.length-1){
+				$('select').formSelect();
+			}
+		}
+		var productId = $('.selected-card').attr('id').split('_')[0];
+		var availableAmount = App.availableProducts[productId].quantity;
+		$('#chosenQuantity').attr('max',availableAmount);
+		$('#addToOrder').addClass('hidden');
+		$('#chosenOrderId').css('display','block');
+		$('.range-field').css('display','block');
+		$('#addProduct').css('display','block');
+		document.querySelector('#chosenQuantity').value = 0;
+		App.selectedProductId = productId;
+	});
+
+	$('#addProduct').click(async()=>{
+		var amount = document.querySelector('#chosenQuantity').value;
+		var orderId = $('li.selected').attr('id').slice(-1) - 1 ;
+		console.log(orderId);
+		var result = await App.addProductToOrder(App.selectedProductId,amount,orderId);
+		$('#chosenOrderId').css('display','none');
+		$('.range-field').css('display','none');
+		$('#addProduct').css('display','none');
+		console.log(result);
+	});
+	
+
+
+	$("table.currentOrders").on('click', 'tr',async(target)=>{
+		$('#orderInfo').modal('open');
+		var orderId = target.currentTarget.id.slice('-')[0];
+		console.log(orderId);
+		$('#productInfo').empty();
+		$('#orderStuff').empty();
+		var row = $('<tr></tr>').attr('id','order_row');
+		$('#orderStuff').append(row);
+
+		var order = App.orders[orderId];
+
+		$(`#order_row`).append($("<td></td>").text(order.orderId));
+		$(`#order_row`).append($("<td></td>").text(order.productCount));
+		$(`#order_row`).append($("<td></td>").text(`${order.totalSum} ETH`));
+		$(`#order_row`).append($("<td></td>").text(order.creationDate));
+		$(`#order_row`).append($("<td></td>").text(order.state));
+
+		for(let i = 0; i < order.products.length; i++){
+			var prod = order.products[i];
+			var row_p = $('<tr></tr>').attr('id',`order_prod_${i}`);
+			$('#productInfo').append(row_p);
+			$(`#order_prod_${i}`).append($("<td></td>").text(prod.productName));
+			$(`#order_prod_${i}`).append($("<td></td>").text(`${prod.pricePerUnit}  ETH`));
+			$(`#order_prod_${i}`).append($("<td></td>").text(`${prod.quantity}`));
+			$(`#order_prod_${i}`).append($("<td></td>").text(`${prod.totalPrice} ETH`));
+		}
+
+	});
+
+	$('#newOrder').click(()=>{
+		App.createOrder();
+	})
+
+
+	$('#submitOrder').click(()=>{
+		var orderId = $('#orderStuff > tr > td:nth-child(1)')[0].innerHTML;
+		console.log(orderId);
+		App.submitOrder(orderId);
 	})
 });
